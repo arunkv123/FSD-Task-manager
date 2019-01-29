@@ -1,0 +1,16 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: jdbc:mysql://localhost:3306/project-manager
+    username: root
+    password: pass@word1
+
+server:
+  port: 9000
+  
+logging:
+  level: 
+    org.springframework.web: INFO
+    org.hibernate: ERROR
