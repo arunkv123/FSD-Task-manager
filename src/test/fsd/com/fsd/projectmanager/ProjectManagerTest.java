@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,33 +30,34 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fsd.projectmanager.controller.TaskController;
+import com.fsd.projectmanager.model.ParentTask;
+import com.fsd.projectmanager.model.Project;
 import com.fsd.projectmanager.model.Task;
 import com.fsd.projectmanager.model.TaskModel;
+import com.fsd.projectmanager.model.User;
 import com.fsd.projectmanager.service.TaskService;
 
 @RunWith(SpringRunner.class)
 // @WebMvcTest
-@SpringBootTest(classes=Application.class,webEnvironment = WebEnvironment.MOCK)
-//@WebMvcTest(TaskController.class)
+@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.MOCK)
+// @WebMvcTest(TaskController.class)
 public class ProjectManagerTest {
 
-
 	@Autowired
-	  private WebApplicationContext webApplicationContext;
-	  private MockMvc mockMvc;
+	private WebApplicationContext webApplicationContext;
+	private MockMvc mockMvc;
 
-	  @Before
-	  public void setUp() {
-	    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-	  }
-
+	@Before
+	public void setUp() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+	}
 
 	@MockBean
 	private TaskService taskService;
 
 	@Test
 	public void addTaskMockTest() throws Exception {
-		TaskModel model=new TaskModel();
+		TaskModel model = new TaskModel();
 		model.setEndDate(new Date());
 		model.setParentId(1l);
 		model.setParentName("mock");
@@ -66,8 +68,23 @@ public class ProjectManagerTest {
 
 		when(taskService.addUpdateTask(new Task())).thenReturn(new Task());
 		this.mockMvc
-				.perform(MockMvcRequestBuilders.post("/task/updateTask").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+				.perform(MockMvcRequestBuilders.post("/task/updateTask")
+						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 						.content(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(model)))
 				.andExpect(status().isOk());
+	}
+
+	@Test
+	public void getAlldTaskMockTest() throws Exception {
+		Task task = new Task();
+		task.setEndDate(new Date());
+		task.setPriority(9);
+		task.setParentTask(new ParentTask());
+		task.setUser(new User());
+		task.setProject(new Project());
+		List<Task> tasks = new ArrayList<>();
+		tasks.add(task);
+		when(taskService.getAllTasks()).thenReturn(tasks);
+		this.mockMvc.perform(MockMvcRequestBuilders.get("/task/getAllTasks")).andExpect(status().isOk());
 	}
 }
